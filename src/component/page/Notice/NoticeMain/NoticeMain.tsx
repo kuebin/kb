@@ -49,7 +49,7 @@ export const NoticeMain = () => {
         setNoticeList(res.data.noticeList);
       })
       .catch((err) => {
-        console.err(err);
+        console.error(err);
       });
   };
 
