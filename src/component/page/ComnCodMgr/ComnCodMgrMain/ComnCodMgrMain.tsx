@@ -5,28 +5,16 @@ import { StyledTable, StyledTd, StyledTh } from "../../../common/styled/StyledTa
 import { ComnCodMgrMainStyled } from "./styled";
 import { useContext, useEffect, useState } from "react";
 import { PageNavigate } from "../../../common/pageNavigation/PageNavigate";
-import { ComnCodContext } from "../../../../api/provider/ComnCodMgrProvider";
+
 import { ComnCodMgrModal } from "../ComnCodMgrModal/ComnCodMgrModal";
 import { useRecoilState } from "recoil";
+
+import { useNavigate } from "react-router-dom";
+import { ComnCodContext } from "../../../../api/provider/ComnCodMgrProvider";
 import { modalState } from "../../../../stores/modalState";
+import { IComnCodList, ISearchComnCod } from "../../../../models/interface/ComncodeMgr/comnCodeMgrModel";
 
 
-
-export interface IComnCodList {
-    row_num: number;
-    grp_cod: string;
-    grp_cod_nm: string;
-    grp_cod_eplti: string;
-    use_poa: string;
-    fst_enlm_dtt:number;
-    reg_date: string| null;
-    detailcnt: number;
-}
-
-export interface ISearchComnCod {
-    totalCount: number;
-    listComnGrpCod: IComnCodList[];
-}
 
 export const ComnCodMgrMain = () => {
     const [comnCodList, setComnCodList] = useState<IComnCodList[]>([]);
@@ -35,6 +23,7 @@ export const ComnCodMgrMain = () => {
     const { searchKeyword } = useContext(ComnCodContext);
     const [modal, setModal] = useRecoilState<boolean>(modalState);
     const [grpCod, setGrpCod] = useState<string>('');
+    const navigate = useNavigate();
 
     useEffect(()=> {
         searchComnCod();
@@ -82,7 +71,8 @@ export const ComnCodMgrMain = () => {
         searchComnCod(currentPage);
     }
 
-    const handlerModal = (grpCod:string)=>{
+    const handlerModal = (grpCod:string , e: React.MouseEvent<HTMLElement, MouseEvent>)=>{
+        e.stopPropagation(); // 수정 버튼이랑 제목 클릭이랑 구분해줌
         setGrpCod(grpCod)
         setModal(!modal)
     }
@@ -112,15 +102,17 @@ export const ComnCodMgrMain = () => {
                 <tbody>
                     {
                         comnCodList && comnCodList?.length > 0 ? (
-                            comnCodList.map((a,i) => {
+                            comnCodList.map((a) => {
                             return (
-                                <tr key={i}>
+                                <tr key={a.grp_cod} onClick={() => {
+                                    navigate(a.grp_cod, { state: { grpCodNm : a.grp_cod_nm}});
+                                }}>
                                     <StyledTd>{a.grp_cod}</StyledTd>
                                     <StyledTd>{a.grp_cod_nm}</StyledTd>
                                     <StyledTd>{a.grp_cod_eplti}</StyledTd>
                                     <StyledTd>{a.use_poa}</StyledTd>
                                     <StyledTd>{fomatData(a.fst_enlm_dtt)}</StyledTd>
-                                    <StyledTd><a onClick={()=>{handlerModal(a.grp_cod)}}>수정</a></StyledTd>
+                                    <StyledTd><a onClick={(e)=>{handlerModal(a.grp_cod, e)}}>수정</a></StyledTd>
                                 </tr>
                             ); 
                         })

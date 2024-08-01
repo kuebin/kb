@@ -4,18 +4,8 @@ import { modalState } from "../../../../stores/modalState";
 import { Button } from "../../../common/Button/Button";
 import { FC, useEffect, useState } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { IComnCod, IComnGrpCodModal, IDetailResponse, IPostResponse } from "../../../../models/interface/ComncodeMgr/comnCodeMgrModel";
 
-export interface IComnCod{
-    grp_cod?: string;
-    grp_cod_nm?: string;
-    use_poa?: string;
-    grp_cod_eplti?: string;
-
-}
-
-export interface IPostResponse{
-    result: 'SUCCESS'
-}
 
 export interface IComnCodMgrModalProps{
     onPostSuccess: () => void;
@@ -23,17 +13,6 @@ export interface IComnCodMgrModalProps{
     setGrpCod:(grpCod:string)=>void
 }
 
-export interface IComnGrpCodModal{
-    grp_cod: string;
-    grp_cod_nm: string;
-    grp_cod_eplti: string;
-    use_poa: string;  
-}
-
-export interface IDetailResponse extends IPostResponse{
-    comnGrpCodModel : IComnGrpCodModal;
-    resultMsg: string;
-}
 
 export const ComnCodMgrModal: FC<IComnCodMgrModalProps> = ({onPostSuccess, grpCod, setGrpCod})=>{
 
@@ -83,11 +62,15 @@ export const ComnCodMgrModal: FC<IComnCodMgrModalProps> = ({onPostSuccess, grpCo
                 .catch((err)=>{
                     console.error(err)
                 })
+    }
 
+    const cleanUp = ()=>{
+        SetDetailComnCod(undefined)
+        setGrpCod('')
     }
 
     return(
-        <ComnCodMgrModalStyled isOpen={modal} ariaHideApp={false}>
+        <ComnCodMgrModalStyled isOpen={modal} ariaHideApp={false} onAfterClose={cleanUp}>
             <div className="wrap">
                 <div className="header">그룹 코드 관리</div>
                 <ComnCodMgrTableStyled>
